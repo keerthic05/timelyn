@@ -1,6 +1,7 @@
 import uuid
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from backend.app.db.base import Base
 
 class User(Base):
@@ -8,3 +9,9 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    google_access_token = Column(String, nullable=True)
+    google_refresh_token = Column(String, nullable=True)
+
+    tasks = relationship("Task", back_populates="user", cascade="all, delete")
+    calendar_events = relationship("CalendarEvent", back_populates="user", cascade="all, delete")
+    schedules = relationship("Schedule", back_populates="user", cascade="all, delete")
