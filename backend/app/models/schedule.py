@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from backend.app.db.base import Base
+from app.db.base import Base
 
 class Schedule(Base):
     __tablename__ = "schedules"

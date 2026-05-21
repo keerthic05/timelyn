@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import List, Dict, AnyStr
+from typing import List, Dict, Any
 
 WINDOW_HOURS = {
     "morning": (6, 12),
@@ -35,15 +35,15 @@ def generate_schedule(
     # 1. Collect fixed blocks
     fixed_blocks = []
     for ev in fixed_events:
-        start = ev.start if ev.start_time.tzinfo else ev.start_time.replace(tzinfo=timezone.utc)
+        start = ev.start_time if ev.start_time.tzinfo else ev.start_time.replace(tzinfo=timezone.utc)
         end = ev.end_time if ev.end_time.tzinfo else ev.end_time.replace(tzinfo=timezone.utc)
         if end > now:
-            fixed_blocks.append({"start": start, "end": end, "title": ev.title, "type": "fixed"})
+            fixed_blocks.append({"start": start, "end": end, "title": ev.title, "block_type": "fixed"})
     fixed_blocks.sort(key=lambda b: b["start"])
 
     # build free slots per day
     free_slots: List[Dict] = []
-    cursor = now.replace(hour=work_start, min=0, second=0, microsecond=0)
+    cursor = now.replace(hour=work_start, minute=0, second=0, microsecond=0)
     if cursor < now:
         cursor = now
 
@@ -67,15 +67,15 @@ def generate_schedule(
 
     # sort tasks
     def task_sort_key(t):
-        d1 = t.deadline if t.deadline.tzinfo else t.deadline.replace(tzinfor=timezone.utc)
+        d1 = t.deadline if t.deadline.tzinfo else t.deadline.replace(tzinfo=timezone.utc)
         return (d1, -t.priority)
     pending = sorted([t for t in tasks if not t.completed], key=task_sort_key)
 
     # place tasks into free slots
     result_blocks = []
     explanation = []
-    slot_index = 0
-    slot_offsets = [s["start"] for s in free_slots] # mutable cursor per slot
+    # slot_index = 0
+    # slot_offsets = [s["start"] for s in free_slots] # mutable cursor per slot
     # copy free_slots into mutable form
     available = [{"start": s["start"], "end": s["end"]} for s in free_slots]
 
