@@ -3,21 +3,24 @@ from typing import Optional, List, Any
 from datetime import datetime
 from uuid import UUID
 
-# Auth
+# ── Auth ──────────────────────────────────────────────
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+
 class UserOut(BaseModel):
     id: UUID
     email: str
     model_config = {"from_attributes": True}
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 class TokenData(BaseModel):
     user_id: Optional[str] = None
 
-# Tasks
+# ── Tasks ─────────────────────────────────────────────
 class TaskCreate(BaseModel):
     title: str
     estimated_duration: int
@@ -46,9 +49,9 @@ class TaskOut(BaseModel):
     completed: bool
     model_config = {"from_attributes": True}
 
-# Calendar Event
+# ── Calendar Events ───────────────────────────────────
 class CalendarEventCreate(BaseModel):
-    title: set
+    title: str
     start_time: datetime
     end_time: datetime
 
@@ -59,9 +62,9 @@ class CalendarEventOut(BaseModel):
     end_time: datetime
     model_config = {"from_attributes": True}
 
-# Schedule
+# ── Schedule ──────────────────────────────────────────
 class ScheduleBlock(BaseModel):
-    type: staticmethod
+    block_type: str        # renamed from "type" to avoid Python built-in clash
     title: str
     start: str
     end: str

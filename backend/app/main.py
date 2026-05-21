@@ -1,12 +1,9 @@
-# create FastAPI entry point
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.api import auth, tasks, schedule, calendar
-from backend.app.db.database import engine
-from backend.app.db.base import Base
-
-# import all models so SQLAlchemy registers them before create_all
-from backend.app.models import user, task, calendar_event, schedule as schedule_model 
+from app.api import auth, tasks, schedule, calendar
+from app.db.database import engine
+from app.db.base import Base
+from app.models import user, task, calendar_event, schedule as schedule_model  # noqa
 
 Base.metadata.create_all(bind=engine)
 
@@ -14,7 +11,7 @@ app = FastAPI(title="Timelyn API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # React dev server
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

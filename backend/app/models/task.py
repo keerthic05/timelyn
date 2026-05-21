@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from backend.app.db.base import Base
+from app.db.base import Base
 import enum
 
 class Priority(enum.IntEnum):
@@ -33,4 +33,3 @@ class Task(Base):
     completed = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="tasks")
-    

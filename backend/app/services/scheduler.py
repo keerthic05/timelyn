@@ -103,12 +103,12 @@ def generate_schedule(
             task_start = slot["start"]
             task_end = task_start + duration
             result_blocks.append({
-                "type": "task",
-                "title": task.title,
-                "start": task_start.isoformat(),
-                "end": task_end.isoformat(),
+                "block_type": "task",      # was "type"
+                "title":   task.title,
+                "start":   task_start.isoformat(),
+                "end":     task_end.isoformat(),
                 "task_id": str(task.id),
-                "reason": f"Priority {task.priority}, deadline {deadline.strftime('%b %d %H:%M')}",
+                "reason":  f"Priority {task.priority}, deadline {deadline.strftime('%b %d %H:%M')}",
             })
             explanation.append(
                 f" '{task.title}' scheduled {task_start.strftime('%a %b %d %H:%M')}-"
@@ -130,10 +130,10 @@ def generate_schedule(
         for ev in fixed_blocks:
             if now <= ev["start"] <= schedule_end:
                 result_blocks.append({
-                    "type": "fixed",
+                    "block_type": "fixed",     # was "type"
                     "title": ev["title"],
                     "start": ev["start"].isoformat(),
-                    "end": ev["end"].isoformat(),
+                    "end":   ev["end"].isoformat(),
                 })
         result_blocks.sort(key=lambda b: b["start"])
         return {"blocks": result_blocks, "explanation": explanation}
