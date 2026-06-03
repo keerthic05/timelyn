@@ -13,6 +13,14 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// converts datetime-local string (no timezone) to ISO string w/ timezone
+// ex: if datetime-local gives "2026-05-25T14:00" we need "2026-05-25T14:00:00-07:00"
+export function toISOWithTimezone(localDatetimeStr) {
+    if (!localDatetimeStr) return localDatetimeStr;
+    const date = new Date(localDatetimeStr);
+    return date.toISOString(); // converts to UTC ISO string (backend handles correctly)
+}
+
 // Auth
 export const register = (email, password) =>
   API.post("/api/auth/register", { email, password });
