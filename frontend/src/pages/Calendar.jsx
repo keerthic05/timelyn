@@ -26,7 +26,7 @@ export default function Calendar() {
     e.preventDefault();
     try {
       await createEvent(form);
-      setForm({ title: "", start_time: "", end_time: "" });
+      setForm({ title: form.title, start_time: new Date(form.start_time).toISOString, end_time: new Date(form.end_time).toISOString(), });
       fetchEvents();
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to create event");
