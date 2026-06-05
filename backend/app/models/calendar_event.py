@@ -11,7 +11,7 @@ class CalendarEvent(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     google_event_id = Column(String, nullable=True)
     title = Column(String, nullable=False)
-    start_time = Column(DateTime(timezone=True), nullable=False)
-    end_time = Column(DateTime(timezone=True), nullable=False)
+    start_time = Column(DateTime(timezone=False), nullable=False)
+    end_time = Column(DateTime(timezone=False), nullable=False)
 
     user = relationship("User", back_populates="calendar_events")

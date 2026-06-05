@@ -25,8 +25,12 @@ export default function Calendar() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createEvent(form);
-      setForm({ title: form.title, start_time: new Date(form.start_time).toISOString, end_time: new Date(form.end_time).toISOString(), });
+      await createEvent({
+        title: form.title,
+        start_time: form.start_time,
+        end_time: form.end_time,
+      });
+      setForm({ title: "", start_time: "", end_time: "" });
       fetchEvents();
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to create event");

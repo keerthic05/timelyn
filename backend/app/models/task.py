@@ -11,7 +11,7 @@ class Task(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
     estimated_duration = Column(Integer, nullable=False)
-    deadline = Column(DateTime(timezone=True), nullable=False)
+    deadline = Column(DateTime(timezone=False), nullable=False)
     priority = Column(Integer, nullable=False, default=2)
     preferred_window = Column(String, default="any")
     splittable = Column(Boolean, default=False)

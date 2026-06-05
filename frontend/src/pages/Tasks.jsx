@@ -38,7 +38,7 @@ export default function Tasks() {
         ...form,
         estimated_duration: parseInt(form.estimated_duration),
         priority: parseInt(form.priority),
-        deadline: new Date(form.deadline).toISOString(), // this converts to UTC ISO string
+        deadline: form.deadline, // this converts to UTC ISO string
       });
       setForm({
         title: "",
