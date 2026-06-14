@@ -10,7 +10,7 @@ export default function Schedule() {
 
   useEffect(() => {
     getLatestSchedule()
-      .then((res) => setSchedule(res.data))
+      .then(res => setSchedule(res.data))
       .catch(() => {})
       .finally(() => setFetching(false));
   }, []);
@@ -28,13 +28,12 @@ export default function Schedule() {
     }
   };
 
+  // Groups flat block array into { "Thursday, Jun 5": [block, ...], ... }
   const groupByDay = (blocks) => {
     const groups = {};
-    blocks.forEach((block) => {
+    blocks.forEach(block => {
       const day = new Date(block.start).toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
+        weekday: "long", month: "short", day: "numeric"
       });
       if (!groups[day]) groups[day] = [];
       groups[day].push(block);
@@ -42,115 +41,109 @@ export default function Schedule() {
     return groups;
   };
 
+  // Format "09:00 – 10:30" from two ISO strings
+  const timeRange = (start, end) =>
+    `${new Date(start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} – ${new Date(end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+
   return (
-    <div className="page">
-      <h1>Schedule</h1>
-      <div className="card schedule-controls">
-        <h2>Generate New Schedule</h2>
-        <div className="controls-row">
-          <div className="form-group">
-            <label>Days ahead</label>
-            <input
-              type="number"
-              min="1"
-              max="14"
-              value={params.days}
-              onChange={(e) => setParams({ ...params, days: parseInt(e.target.value) })}
-            />
-          </div>
-          <div className="form-group">
-            <label>Work day start (hour)</label>
-            <input
-              type="number"
-              min="0"
-              max="23"
-              value={params.work_start}
-              onChange={(e) =>
-                setParams({ ...params, work_start: parseInt(e.target.value) })
-              }
-            />
-          </div>
-          <div className="form-group">
-            <label>Work day end (hour)</label>
-            <input
-              type="number"
-              min="0"
-              max="23"
-              value={params.work_end}
-              onChange={(e) =>
-                setParams({ ...params, work_end: parseInt(e.target.value) })
-              }
-            />
-          </div>
-          <button
-            className="btn-primary"
-            onClick={handleGenerate}
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "⚡ Generate"}
-          </button>
-        </div>
-        {error && <p className="error">{error}</p>}
+    <>
+      <div className="topbar">
+        <span className="topbar-title">Timelyn</span>
+        <span className="topbar-sep">/</span>
+        <span className="topbar-page">Schedule</span>
       </div>
 
-      {fetching ? (
-        <p>Loading schedule...</p>
-      ) : !schedule ? (
-        <div className="card">
-          <p className="empty">
-            No schedule yet. Add some tasks and calendar events, then hit Generate!
-          </p>
+      <div className="page">
+        <div className="page-header">
+          <h1 className="page-title">Schedule</h1>
+          <p className="page-subtitle">Generate an optimized plan from your tasks and calendar events</p>
         </div>
-      ) : (
-        <div className="schedule-output">
-          <p className="schedule-meta">
-            Generated: {new Date(schedule.generated_at).toLocaleString()}
-          </p>
 
-          {schedule.explanation?.length > 0 && (
-            <div className="card explanation">
-              <h3>📋 Scheduling Notes</h3>
-              <ul>
-                {schedule.explanation.map((note, i) => (
-                  <li key={i} className={note.startsWith("⚠") ? "warning" : ""}>
-                    {note}
-                  </li>
-                ))}
-              </ul>
+        {/* Generate controls card */}
+        <div className="card" style={{ marginBottom: "1.5rem" }}>
+          <div className="card-title">Generate new schedule</div>
+          <div className="schedule-toolbar">
+            <div className="form-group">
+              <label className="form-label">Days ahead</label>
+              <input type="number" min="1" max="14" value={params.days}
+                onChange={e => setParams({ ...params, days: parseInt(e.target.value) })} />
             </div>
-          )}
+            <div className="form-group">
+              <label className="form-label">Day starts (hour)</label>
+              <input type="number" min="0" max="23" value={params.work_start}
+                onChange={e => setParams({ ...params, work_start: parseInt(e.target.value) })} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Day ends (hour)</label>
+              <input type="number" min="0" max="23" value={params.work_end}
+                onChange={e => setParams({ ...params, work_end: parseInt(e.target.value) })} />
+            </div>
+            <button className="btn btn-primary" onClick={handleGenerate} disabled={loading}>
+              {loading ? "Generating..." : "⚡ Generate"}
+            </button>
+          </div>
+          {error && <div className="error-msg" style={{ marginTop: "0.75rem" }}>{error}</div>}
+        </div>
 
-          {Object.entries(groupByDay(schedule.blocks)).map(([day, blocks]) => (
-            <div key={day} className="day-group">
-              <h3 className="day-header">{day}</h3>
-              <div className="blocks">
-                {blocks.map((block, i) => (
-                  <div
-                    key={i}
-                    className={`block ${block.block_type === "fixed" ? "block-fixed" : "block-task"}`}
-                  >
-                    <div className="block-time">
-                      {new Date(block.start).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      –{" "}
-                      {new Date(block.end).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </div>
-                    <div className="block-title">{block.title}</div>
-                    {block.reason && (
-                      <div className="block-reason">{block.reason}</div>
-                    )}
-                  </div>
-                ))}
+        {/* Schedule output */}
+        {fetching ? (
+          <div className="loading-text">Loading...</div>
+        ) : !schedule ? (
+          <div className="card">
+            <div className="empty-state">
+              <div className="empty-state-icon">⚡</div>
+              <div className="empty-state-text">
+                No schedule yet.<br />Add tasks and events, then hit Generate.
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+          </div>
+        ) : (
+          <>
+            {/* Timestamp */}
+            <div className="schedule-meta">
+              ◷ Generated {new Date(schedule.generated_at).toLocaleString()}
+            </div>
+
+            {/* Explanation notes from the algorithm */}
+            {schedule.explanation?.length > 0 && (
+              <div className="card" style={{ marginBottom: "1.5rem" }}>
+                <div className="card-title">Scheduling notes</div>
+                <div className="notes-list">
+                  {schedule.explanation.map((note, i) => (
+                    <div key={i} className={`note-item ${note.startsWith("⚠") ? "warning" : ""}`}>
+                      {note}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Day-by-day blocks */}
+            {Object.entries(groupByDay(schedule.blocks)).map(([day, blocks]) => (
+              <div key={day} className="day-section">
+                <div className="day-label">{day}</div>
+                <div className="block-list">
+                  {blocks.map((block, i) => (
+                    <div key={i} className={`sched-block ${block.block_type === "fixed" ? "sched-block-fixed" : "sched-block-task"}`}>
+                      {/* Time column — monospace numbers stay aligned */}
+                      <div className="sched-time">{timeRange(block.start, block.end)}</div>
+                      <div className="sched-info">
+                        <div className="sched-title">{block.title}</div>
+                        {/* Only task blocks have a reason field */}
+                        {block.reason && <div className="sched-reason">{block.reason}</div>}
+                      </div>
+                      {/* Small badge indicating block type */}
+                      <span className={`badge ${block.block_type === "fixed" ? "badge-green" : "badge-blue"}`}>
+                        {block.block_type === "fixed" ? "event" : "task"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </>
   );
 }
